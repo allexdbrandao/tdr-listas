@@ -1,0 +1,12 @@
+# Auxiliares do latexmk
+*.aux
+*.log
+*.out
+*.bbl
+*.blg
+*.fls
+*.fdb_latexmk
+
+# Auxiliares do R
+*.Rhistory
+*.RData
