@@ -1,0 +1,9 @@
+Coluna: Wind
+Observações: 153
+Valores NA: 0
+Média por mês:
+Mês 5: 11.62 (medidos: 31/31 dias)
+Mês 6: 10.27 (medidos: 30/30 dias)
+Mês 7: 8.94 (medidos: 31/31 dias)
+Mês 8: 8.79 (medidos: 31/31 dias)
+Mês 9: 10.18 (medidos: 30/30 dias)
