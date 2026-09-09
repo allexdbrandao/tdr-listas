@@ -1,4 +1,3 @@
-
 dados <- read.csv("airquality.csv")
 
 # Grafico PDF
