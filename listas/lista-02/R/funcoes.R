@@ -44,7 +44,7 @@ desenhar_dispersao <- function(dados, modelo, caminho) {
     dados$Wind,
     xlab = "Temperatura (°F)",
     ylab = "Velocidade do vento (mph)",
-    main = "Velocidade do vento em função da temperatura"
+    main = "Velocidade do vento em função da temperatura (ºF)"
   )
 
   abline(modelo)
