@@ -1,0 +1,60 @@
+---
+title: "Análise dos dados de qualidade do ar"
+author: "Allex Brandão"
+lang: pt-BR
+format:
+  html:
+    embed-resources: true
+---
+
+```{r}
+#| include: false
+
+library(targets)
+library(knitr)
+
+tar_load(dados)
+tar_load(medias)
+tar_load(modelo)
+tar_load(figura)
+
+```
+
+# Introdução
+
+O conjunto de dados analisado possui `r nrow(dados)` observações. A variável resposta escolhida foi a velocidade do vento (Wind), enquanto a temperatura (Temp) foi utilizada como variável explicativa.
+
+O modelo linear ajustado utilizou `r nobs(modelo)` observações. O intercepto estimado foi `r round(coef(modelo)[["(Intercept)"]], 4)` e o coeficiente associado à temperatura foi `r round(coef(modelo)[["Temp"]], 4)`.
+
+# Médias mensais
+
+A Tabela @tbl-medias apresenta as médias mensais da velocidade do vento e da temperatura.
+
+```{r}
+#| label: tbl-medias
+#| tbl-cap: "Médias mensais da velocidade do vento e da temperatura"
+
+kable(
+  medias,
+  digits = 2,
+  col.names = c("Mês", "Velocidade do vento", "Temperatura")
+)
+
+```
+
+# Relação entre temperatura e velocidade do vento
+
+A Figura @fig-dispersao apresenta a relação entre a temperatura e a velocidade do vento, juntamente com a reta ajustada pelo modelo linear.
+
+```{r}
+#| label: fig-dispersao
+#| fig-cap: "Velocidade do vento em função da temperatura, com reta de regressão ajustada."
+
+knitr::include_graphics(figura)
+
+```
+
+# Conclusão
+
+Os resultados indicam uma relação linear negativa entre a temperatura e a velocidade do vento. Assim, no conjunto de dados analisado, temperaturas mais elevadas estão associadas, em média, a menores velocidades do vento.
+

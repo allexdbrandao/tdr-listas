@@ -1,0 +1,12 @@
+# targets 
+_targets/
+_targets_r/
+
+# HTML
+saidas/
+*.html
+
+# Arquivos R
+.Rhistory
+.RData
+.Rproj.user/
