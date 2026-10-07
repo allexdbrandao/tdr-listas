@@ -42,5 +42,20 @@ list(
       "saidas/medias.csv"
     },
     format = "file"
+  ),
+
+  tar_target(
+    relatorio,
+    {
+      force(dados)
+      force(medias)
+      force(modelo)
+      force(figura)
+
+      system2("quarto", c("render", "relatorio.qmd"))
+
+      "relatorio.html"
+    },
+    format = "file"
   )
 )
