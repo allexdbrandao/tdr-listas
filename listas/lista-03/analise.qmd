@@ -1,0 +1,60 @@
+---
+title: "Diárias vendidas pelos hotéis de uma rede"
+author: "Allex D. Brandão"
+lang: pt-BR
+format:
+  html:
+    self-contained: true
+execute:
+  echo: true
+---
+
+# Exercício 1
+
+```{r}
+library(readr)
+
+cadastro <- read_delim(
+  "dados/cadastro.csv",
+  delim = ";",
+  locale = locale(
+    decimal_mark = ".",
+    encoding = "ISO-8859-1"
+  ),
+  na = "",
+  col_types = cols(
+    codigo = col_character(),
+    nome = col_character(),
+    padrao = col_character(),
+    quartos = col_double()
+  ),
+  show_col_types = FALSE
+)
+
+diarias_2023 <- read_delim(
+  "dados/diarias_2023.csv",
+  delim = ";",
+  locale = locale(
+    decimal_mark = ".",
+    encoding = "US-ASCII"
+  ),
+  na = "-",
+  col_types = cols(
+    codigo = col_character(),
+    jan = col_double(),
+    fev = col_double(),
+    mar = col_double(),
+    abr = col_double(),
+    mai = col_double(),
+    jun = col_double(),
+    jul = col_double(),
+    ago = col_double(),
+    set = col_double(),
+    out = col_double(),
+    nov = col_double(),
+    dez = col_double()
+  ),
+  show_col_types = FALSE
+)
+
+```

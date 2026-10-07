@@ -1,0 +1,29 @@
+Lista 03 --- dados sorteados para o login allexdbrandao
+
+Tema: Diárias vendidas pelos hotéis de uma rede
+Unidade de observação: hotel
+
+Arquivos
+
+  diarias_2023.csv, diarias_2024.csv, diarias_2025.csv
+      Uma linha por unidade e uma coluna por mês do ano. A coluna
+      codigo identifica a unidade, e as colunas jan a dez trazem o
+      valor medido: diárias vendidas no mês.
+      Mês sem registro aparece como "-".
+
+  cadastro.csv
+      Uma linha por unidade, com as colunas:
+        codigo        identificador da unidade, o mesmo das medições
+        nome          nome da unidade
+        padrao        categoria: Econômico, Executivo ou Resort
+        quartos       porte: quartos disponíveis
+
+Conferência
+
+  unidades no cadastro:   12
+  unidades com medições:  11
+
+  ano    meses sem registro    soma dos valores registrados
+  2023                    3                          349720
+  2024                    4                          375961
+  2025                    5                          396624
