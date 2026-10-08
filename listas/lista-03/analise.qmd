@@ -137,4 +137,91 @@ resumo_categoria <- dados_2023 |>
 resumo_categoria
 ```
 
+# Exercício 5
 
+Os arquivos anuais foram lidos com map() e empilhados em uma única tabela, mantendo o nome do arquivo para identificar o ano.
+Foi aplicada a transformação para o formato longo e a junção com o cadastro conforme utilizado nos exercícios anteriores. Foi realizada a inclusão da variável ano para obter os totais por categoria em cada ano.
+
+```{r}
+library(purrr)
+
+arquivos_diarias <- c(
+  "dados/diarias_2023.csv",
+  "dados/diarias_2024.csv",
+  "dados/diarias_2025.csv"
+)
+```
+
+```{r}
+diarias <- arquivos_diarias |>
+  set_names(basename) |>
+  map(\(arquivo) read_delim(
+    arquivo,
+    delim = ";",
+    locale = locale(
+      decimal_mark = ".",
+      encoding = "US-ASCII"
+    ),
+    na = "-",
+    col_types = cols(
+      codigo = col_character(),
+      jan = col_double(),
+      fev = col_double(),
+      mar = col_double(),
+      abr = col_double(),
+      mai = col_double(),
+      jun = col_double(),
+      jul = col_double(),
+      ago = col_double(),
+      set = col_double(),
+      out = col_double(),
+      nov = col_double(),
+      dez = col_double()
+    ),
+    show_col_types = FALSE
+  )) |>
+  list_rbind(names_to = "arquivo")
+```
+
+```{r}
+diarias <- diarias |>
+  mutate(
+    ano = parse_number(arquivo)
+  )
+```
+
+```{r}
+diarias_long <- diarias |>
+  pivot_longer(
+    cols = all_of(meses),
+    names_to = "mes",
+    values_to = "diarias"
+  ) |>
+  mutate(
+    mes = factor(mes, levels = meses)
+  )
+```
+
+
+```{r}
+dados <- diarias_long |>
+  left_join(cadastro, by = "codigo") |>
+  mutate(
+    diarias_por_quarto = diarias / quartos
+  )
+```
+
+```{r}
+resumo_final <- dados |>
+  group_by(padrao, ano) |>
+  summarise(
+    total_anual = sum(diarias, na.rm = TRUE),
+    .groups = "drop"
+  ) |>
+  pivot_wider(
+    names_from = ano,
+    values_from = total_anual
+  )
+
+resumo_final
+```
