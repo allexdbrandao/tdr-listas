@@ -87,3 +87,21 @@ n_linhas
 n_ausentes
 
 ```
+
+# Exercício 3
+
+```{r}
+dados_2023 <- diarias_2023_long |>
+  left_join(cadastro, by = "codigo") |>
+  mutate(
+    diarias_por_quarto = diarias / quartos
+  )
+
+n_linhas == nrow(dados_2023)
+
+sem_medicao <- cadastro |>
+  anti_join(diarias_2023_long, by = "codigo")
+
+sem_medicao
+
+```
