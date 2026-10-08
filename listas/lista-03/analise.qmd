@@ -105,3 +105,36 @@ sem_medicao <- cadastro |>
 sem_medicao
 
 ```
+
+# Exercício 4
+
+Os meses sem registro serão mantidos como NA, enão substituidos por outro tipo de medida para inferir seus valores. Portanto, os totais irão considerar apenas os valores registrados, e as médias serão calculadas somente para os meses com registro.
+
+```{r}
+resumo_unidade <- dados_2023 |>
+  group_by(codigo, nome, padrao) |>
+  summarise(
+    meses_com_registro = sum(!is.na(diarias)),
+    total_anual = sum(diarias, na.rm = TRUE),
+    media_mensal_por_quarto = mean(diarias_por_quarto, na.rm = TRUE),
+    .groups = "drop"
+  ) |>
+  arrange(desc(media_mensal_por_quarto))
+
+resumo_unidade
+```
+
+```{r}
+resumo_categoria <- dados_2023 |>
+  group_by(padrao) |>
+  summarise(
+    numero_unidades = n_distinct(codigo),
+    total_anual = sum(diarias, na.rm = TRUE),
+    media_mensal_por_quarto = mean(diarias_por_quarto, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+resumo_categoria
+```
+
+
