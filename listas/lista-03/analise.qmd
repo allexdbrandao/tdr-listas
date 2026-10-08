@@ -1,0 +1,227 @@
+---
+title: "Diárias vendidas pelos hotéis de uma rede"
+author: "Allex D. Brandão"
+lang: pt-BR
+format:
+  html:
+    self-contained: true
+execute:
+  echo: true
+---
+
+# Exercício 1
+
+```{r}
+library(readr)
+
+cadastro <- read_delim(
+  "dados/cadastro.csv",
+  delim = ";",
+  locale = locale(
+    decimal_mark = ".",
+    encoding = "ISO-8859-1"
+  ),
+  na = "",
+  col_types = cols(
+    codigo = col_character(),
+    nome = col_character(),
+    padrao = col_character(),
+    quartos = col_double()
+  ),
+  show_col_types = FALSE
+)
+
+diarias_2023 <- read_delim(
+  "dados/diarias_2023.csv",
+  delim = ";",
+  locale = locale(
+    decimal_mark = ".",
+    encoding = "US-ASCII"
+  ),
+  na = "-",
+  col_types = cols(
+    codigo = col_character(),
+    jan = col_double(),
+    fev = col_double(),
+    mar = col_double(),
+    abr = col_double(),
+    mai = col_double(),
+    jun = col_double(),
+    jul = col_double(),
+    ago = col_double(),
+    set = col_double(),
+    out = col_double(),
+    nov = col_double(),
+    dez = col_double()
+  ),
+  show_col_types = FALSE
+)
+
+```
+
+# Exercício 2
+
+```{r}
+library(tidyr)
+library(dplyr)
+
+meses <- c(
+  "jan", "fev", "mar", "abr", "mai", "jun",
+  "jul", "ago", "set", "out", "nov", "dez"
+)
+
+diarias_2023_long <- diarias_2023 |>
+  pivot_longer(
+    cols = all_of(meses),
+    names_to = "mes",
+    values_to = "diarias"
+  ) |>
+  mutate(
+    mes = factor(mes, levels = meses)
+  )
+
+n_linhas <- nrow(diarias_2023_long)
+n_ausentes <- sum(is.na(diarias_2023_long$diarias))
+
+n_linhas
+n_ausentes
+
+```
+
+# Exercício 3
+
+```{r}
+dados_2023 <- diarias_2023_long |>
+  left_join(cadastro, by = "codigo") |>
+  mutate(
+    diarias_por_quarto = diarias / quartos
+  )
+
+n_linhas == nrow(dados_2023)
+
+sem_medicao <- cadastro |>
+  anti_join(diarias_2023_long, by = "codigo")
+
+sem_medicao
+
+```
+
+# Exercício 4
+
+Os meses sem registro serão mantidos como NA, enão substituidos por outro tipo de medida para inferir seus valores. Portanto, os totais irão considerar apenas os valores registrados, e as médias serão calculadas somente para os meses com registro.
+
+```{r}
+resumo_unidade <- dados_2023 |>
+  group_by(codigo, nome, padrao) |>
+  summarise(
+    meses_com_registro = sum(!is.na(diarias)),
+    total_anual = sum(diarias, na.rm = TRUE),
+    media_mensal_por_quarto = mean(diarias_por_quarto, na.rm = TRUE),
+    .groups = "drop"
+  ) |>
+  arrange(desc(media_mensal_por_quarto))
+
+resumo_unidade
+```
+
+```{r}
+resumo_categoria <- dados_2023 |>
+  group_by(padrao) |>
+  summarise(
+    numero_unidades = n_distinct(codigo),
+    total_anual = sum(diarias, na.rm = TRUE),
+    media_mensal_por_quarto = mean(diarias_por_quarto, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+resumo_categoria
+```
+
+# Exercício 5
+
+Os arquivos anuais foram lidos com map() e empilhados em uma única tabela, mantendo o nome do arquivo para identificar o ano.
+Foi aplicada a transformação para o formato longo e a junção com o cadastro conforme utilizado nos exercícios anteriores. Foi realizada a inclusão da variável ano para obter os totais por categoria em cada ano.
+
+```{r}
+library(purrr)
+
+arquivos_diarias <- c(
+  "dados/diarias_2023.csv",
+  "dados/diarias_2024.csv",
+  "dados/diarias_2025.csv"
+)
+```
+
+```{r}
+diarias <- arquivos_diarias |>
+  set_names(basename) |>
+  map(\(arquivo) read_delim(
+    arquivo,
+    delim = ";",
+    locale = locale(
+      decimal_mark = ".",
+      encoding = "US-ASCII"
+    ),
+    na = "-",
+    col_types = cols(
+      codigo = col_character(),
+      jan = col_double(),
+      fev = col_double(),
+      mar = col_double(),
+      abr = col_double(),
+      mai = col_double(),
+      jun = col_double(),
+      jul = col_double(),
+      ago = col_double(),
+      set = col_double(),
+      out = col_double(),
+      nov = col_double(),
+      dez = col_double()
+    ),
+    show_col_types = FALSE
+  )) |>
+  list_rbind(names_to = "arquivo")
+```
+
+```{r}
+diarias <- diarias |>
+  mutate(
+    ano = parse_number(arquivo)
+  )
+```
+
+```{r}
+diarias_long <- diarias |>
+  pivot_longer(
+    cols = all_of(meses),
+    names_to = "mes",
+    values_to = "diarias"
+  ) |>
+  mutate(
+    mes = factor(mes, levels = meses)
+  )
+```
+
+
+```{r}
+dados <- diarias_long |>
+  left_join(cadastro, by = "codigo") |>
+  mutate(
+    diarias_por_quarto = diarias / quartos
+  )
+```
+
+```{r}
+resumo_final <- dados |>
+  group_by(padrao, ano) |>
+  summarise(
+    total_anual = sum(diarias, na.rm = TRUE),
+    .groups = "drop"
+  ) |>
+  pivot_wider(
+    names_from = ano,
+    values_from = total_anual
+  )
+
+resumo_final
+```
